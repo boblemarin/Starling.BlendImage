@@ -155,10 +155,7 @@ package starling.extensions
 			
 			var alphaVector:Vector.<Number> = pma ? new <Number>[alpha, alpha, alpha, alpha] :
 				new <Number>[1.0, 1.0, 1.0, alpha];
-			//support.setDefaultBlendFactors(pma);
 			context.setBlendFactors( sourceBlendFactor, destinationBlendFactor );
-			//context.setBlendFactors( Context3DBlendFactor.ONE, Context3DBlendFactor.ONE );
-			//context.setBlendFactors( cont
 			
 			context.setProgram(Starling.current.getProgram(programName));
 			context.setTextureAt(1, mTexture.base);
