@@ -46,6 +46,14 @@ package starling.extensions
 	 */ 
 	public class BlendImage extends Quad
 	{
+		public static const NORMAL:String = "normal";
+		public static const ALPHA:String = "alpha";
+		public static const ADDITIVE:String = "additive";
+		public static const MULTIPLY:String = "multiply";
+		public static const SCREEN:String = "screen";
+		public static const LIGHTEN:String = "lighten";
+		public static const DARKEN:String = "darken";
+		
 		public var sourceBlendFactor:String;
 		public var destinationBlendFactor:String;
 		
@@ -53,11 +61,8 @@ package starling.extensions
 		private var mSmoothing:String;
 		
 		/** Creates a quad with a texture mapped onto it. */
-		public function BlendImage(texture:Texture, sourceBlendFactor:String = Context3DBlendFactor.ONE, destinationBlendFactor:String = Context3DBlendFactor.ONE )
+		public function BlendImage(texture:Texture, blendMode:String = "" )
 		{
-			this.sourceBlendFactor = sourceBlendFactor;
-			this.destinationBlendFactor = destinationBlendFactor;
-			
 			if (texture)
 			{
 				var frame:Rectangle = texture.frame;
@@ -78,6 +83,49 @@ package starling.extensions
 			{
 				throw new ArgumentError("Texture cannot be null");                
 			}
+			
+			setBlendMode( blendMode );
+		}
+		
+		public function setBlendMode(blendmode:String):BlendImage
+		{
+			switch( blendmode ) {
+				case NORMAL :
+					sourceBlendFactor = Context3DBlendFactor.ONE;
+					destinationBlendFactor = Context3DBlendFactor.ZERO;
+					break;
+				case ALPHA:
+					sourceBlendFactor = Context3DBlendFactor.SOURCE_ALPHA;
+					destinationBlendFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					break;
+				case ADDITIVE:
+					sourceBlendFactor = Context3DBlendFactor.ONE;
+					destinationBlendFactor = Context3DBlendFactor.ONE;
+					break;
+				case MULTIPLY:
+					sourceBlendFactor = Context3DBlendFactor.DESTINATION_COLOR;
+					destinationBlendFactor = Context3DBlendFactor.ZERO;
+					break;
+				case SCREEN:
+					sourceBlendFactor = Context3DBlendFactor.ONE;
+					destinationBlendFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR;
+					break;
+				case LIGHTEN:
+					sourceBlendFactor = Context3DBlendFactor.DESTINATION_COLOR;
+					destinationBlendFactor = Context3DBlendFactor.ONE;
+					break;
+				case DARKEN:
+					sourceBlendFactor = Context3DBlendFactor.DESTINATION_COLOR;
+					destinationBlendFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					break;
+				
+				default:
+					sourceBlendFactor = Context3DBlendFactor.ONE;
+					destinationBlendFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					break;
+			}
+			
+			return this;
 		}
 		
 		/** Disposes vertex- and index-buffer, but does NOT dispose the texture! */
@@ -155,7 +203,10 @@ package starling.extensions
 			
 			var alphaVector:Vector.<Number> = pma ? new <Number>[alpha, alpha, alpha, alpha] :
 				new <Number>[1.0, 1.0, 1.0, alpha];
+			support.setDefaultBlendFactors(pma);
 			context.setBlendFactors( sourceBlendFactor, destinationBlendFactor );
+			//context.setBlendFactors( Context3DBlendFactor.ONE, Context3DBlendFactor.ONE );
+			//context.setBlendFactors( cont
 			
 			context.setProgram(Starling.current.getProgram(programName));
 			context.setTextureAt(1, mTexture.base);
